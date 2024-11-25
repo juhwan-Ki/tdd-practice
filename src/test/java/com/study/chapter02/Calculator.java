@@ -1,4 +1,4 @@
-package chapter02;
+package com.study.chapter02;
 
 public class Calculator {
     public static int plus(int a, int b) {
