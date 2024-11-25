@@ -40,6 +40,44 @@ public class PasswordStrengthMeterTest {
         assertStrength("ab!@ASDQW", PasswordStrength.NOMAL);
     }
 
+    // null이나 ""이 들어왔을 경우
+    @Test
+    void nullInput_Then_Invalid() {
+        assertStrength(null, PasswordStrength.INVALID);
+        assertStrength("", PasswordStrength.INVALID);
+        assertStrength("    ", PasswordStrength.INVALID); // 공백이 여러개로 들어올 수 있음 -> java 11이상에는 isBlank()로 처리하면 해결됨
+    }
+
+    // 대문자를 포함하고 있지 않고 다른 조건을 충족한 경우
+    @Test
+    void meetOtherCriteria_except_for_uppercase_Then_Normal() {
+        assertStrength("ab12!@aa", PasswordStrength.NOMAL);
+    }
+
+    // 길이가 8글자 이상인 조건만 충족하는 경우
+    @Test
+    void meetOnlyLengthCriteria_Then_Weak() {
+        assertStrength("adbadfja", PasswordStrength.WEAK);
+    }
+
+    // 숫자 조건만 충족하는 경우
+    @Test
+    void meetOnlyNumberCriteria_Then_Weak() {
+        assertStrength("12345", PasswordStrength.WEAK);
+    }
+
+    // 대문자 조건만 충족하는 경우
+    @Test
+    void meetOnlyUppercaseCriteria_Then_Weak() {
+        assertStrength("ASDA", PasswordStrength.WEAK);
+    }
+
+    // 아무 조건도 해당하지 않는 경우
+    @Test
+    void meetNoneCriteria_Then_Weak() {
+        assertStrength("abc", PasswordStrength.WEAK);
+    }
+
     private void assertStrength(String password, PasswordStrength strength) {
         PasswordStrength result = meter.meter(password);
         assertEquals(strength, result);
